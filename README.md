@@ -111,6 +111,12 @@ In the Nextcloud admin settings you can:
   Markdown is always available).
 - Only administrators can change these settings.
 
+## Related
+
+- [nc-git-theme](https://github.com/totmin/nc-git-theme) — a Git/GitHub-style theme
+  for Nextcloud that complements the GitHub-like rendering of this app. The screenshot
+  above is taken with it enabled.
+
 ## Credits
 
 - [Matthieu Le Corre](https://github.com/mamatt) — original author (up to 3.0.2)
