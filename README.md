@@ -11,6 +11,10 @@ It show README.md in the way gitlab does ✌️ .
 
 # 
 
+# Fork notice
+
+This is a maintained fork of [mamatt/files_readmemd](https://github.com/mamatt/files_readmemd) by Matthieu Le Corre. Since 3.1.0 it targets Nextcloud 33 & 34 (`@nextcloud/files` v4), renders markdown GitHub-style (code block toolbar, lazy mermaid diagrams, theme-adaptive styling) and is maintained by [Maksim Totmin](https://github.com/totmin). Original versions up to 3.0.2 were released by the upstream project.
+
 # V3.X
 Starting NC 28 the nextcloud files app has been updated to use vue.js. As a consequence files_readme.md had to be rewritten for most of the parts. This new version is using vue.js as frontend framework. this could introduce new bug or regression that were not present in 2.XX versions.
 
@@ -47,3 +51,10 @@ Admin section in setting let you tweak README.md :
 
 - Multi rendering engine are available
 - You can choose which filenames are to be used for header/footer content.
+
+# Credits
+
+- [Matthieu Le Corre](https://github.com/mamatt) — original author (up to 3.0.2)
+- [Maksim Totmin](https://github.com/totmin) — maintainer of this fork (3.1.0+)
+
+Licensed under [AGPL-3.0](LICENSE).

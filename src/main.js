@@ -17,12 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-import Vue from 'vue'
-import { registerFileListHeaders, Header } from '@nextcloud/files'
-import Readmemd from './view/Readmemd.vue'
+import { registerReadmemdHeader } from './header.js'
 import logger from './logger.js'
-
-const ReadmemdView = Vue.extend(Readmemd)
 
 __webpack_nonce__ = btoa(OC.requestToken) 			 		 // eslint-disable-line
 __webpack_public_path__ = OC.linkTo('files_readmemd', 'js/') // eslint-disable-line
@@ -31,55 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	logger.info('initializing ...')
 
-	let HeaderView
-	let FooterView
-
-	// create Header object
-	const ReadmeMDHeader = new Header({
-		id: 'readmemd',
-		order: 100,
-
-		enabled(folder, view) {
-			return view.id === 'files' || view.id === 'files.public' || view.id === 'favorites'
-		},
-
-		async render(el, folder, view) {
-
-			HeaderView = new ReadmemdView({
-				data: {
-					name: 'readmemd-header',
-					zone: 'headermd',
-					fileTableView: view,
-					path: folder.path,
-				},
-			}).$mount(el)
-
-			let footerElement
-
-			if (!document.querySelector('.footermd')) {
-				footerElement = document.createElement('div')
-				document.querySelector('.files-list').after(footerElement)
-			} else {
-				footerElement = document.querySelector('.footermd')
-
-			}
-
-			FooterView = new ReadmemdView({
-				data: {
-					name: 'readmemd-footer',
-					zone: 'footermd',
-					fileTableView: view,
-					path: folder.path,
-				},
-			}).$mount(footerElement)
-		},
-
-		updated(folder, view) {
-			HeaderView.$data.path = folder.path
-			FooterView.$data.path = folder.path
-		},
-	})
-
-	// last step, register the header to filelist
-	registerFileListHeaders(ReadmeMDHeader)
+	// The public share page (Nextcloud >= 30) uses the same files app,
+	// so a single registration covers both private and public views.
+	registerReadmemdHeader()
 })

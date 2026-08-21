@@ -7,19 +7,20 @@
 With this app you can add a header and a footer to your nextcloud directories.
 This can be use to explain the goal of a directory, describe the content of a folder ...
 It show README.md in the way gitlab does.]]></description>
-    <version>3.0.2</version>
+    <version>3.1.0</version>
     <licence>agpl</licence>
     <author mail="matthieu.lecorre@univ-nantes.fr" homepage="https://www.univ-nantes.fr">Matthieu Le Corre</author>
+    <author>Maksim Totmin</author>
     <namespace>ReadmeMD</namespace>
     <types>
 	<filesystem/>
     </types>
     <category>office</category>
-    <website>https://github.com/mamatt/files_readmemd</website>
-    <bugs>https://github.com/mamatt/files_readmemd/issues</bugs>
-    <screenshot>https://raw.githubusercontent.com/mamatt/files_readmemd/master/screenshot.png</screenshot>
+    <website>https://github.com/totmin/files_readmemd</website>
+    <bugs>https://github.com/totmin/files_readmemd/issues</bugs>
+    <screenshot>https://raw.githubusercontent.com/totmin/files_readmemd/master/screenshot.png</screenshot>
     <dependencies>	    
-        <nextcloud min-version="28" max-version="29"/>
+        <nextcloud min-version="33" max-version="34"/>
     </dependencies>
     <settings>   
         <admin>OCA\ReadmeMD\Settings\Admin\Engine</admin>

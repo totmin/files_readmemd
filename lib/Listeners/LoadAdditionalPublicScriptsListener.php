@@ -38,7 +38,7 @@
     
     public function handle(Event $event): void {
 
-        Util::addscript('files_readmemd', 'files_readmemd-public');
+        Util::addscript('files_readmemd', 'files_readmemd-main');
         $result = $this->config-> getAllAppValue() ;
         $this->initialState->provideInitialState('config',$result);
 

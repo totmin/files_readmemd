@@ -4,7 +4,7 @@
 -->
 
 <template>
-	<div v-if="fileName !== null && fileName!== undefined" :class="[ zone ]" :data-filename="fileName">
+	<div v-if="hasEngine" :class="[ zone ]" :data-filename="fileName">
 		<MarkdownEngine v-if="engineType == 'markdown'"
 			:content="content"
 			:mode="mode"
@@ -39,153 +39,121 @@ export default {
 			fileTableView: {},
 			path: null,
 			content: null,
+			requestId: 0,
 		}
 	},
 
 	computed: {
 		engineType() {
+			if (this.fileName === null || this.fileName === undefined) {
+				return null
+			}
 			const ext = this.fileName.substr(this.fileName.lastIndexOf('.') + 1)
 			if ((ext === 'html' || ext === 'htm') && this.config.show_html === 'true') { return 'html' }
 			if ((ext === 'adoc' || ext === 'asciidoc') && this.config.show_asciidoc === 'true') { return 'asciidoc' }
 			if (ext === 'md' || ext === 'markdown') { return 'markdown' }
-			return 'Unsupported Engine'
+			return null
+		},
+
+		hasEngine() {
+			return this.engineType !== null
 		},
 
 		fileList() {
-			if (this.zone === 'footermd') {
-				const FFNames = []
-				this.config.fileslist_footer.forEach((fn) => {
-					Array.prototype.push.apply(FFNames, [
-						fn + '.md',
-						fn + '.markdown',
-						'.' + fn + '.md',
-						'.' + fn + '.markdown',
+			const baseNames = this.zone === 'footermd' ? this.config.fileslist_footer : this.config.fileslist_header
+			const names = []
+			baseNames.forEach((fn) => {
+				// Accept both bare basenames ("README") and full filenames
+				// ("README.md" / ".README.markdown") as configured in the admin settings.
+				Array.prototype.push.apply(names, [
+					fn,
+					'.' + fn,
+					fn + '.md',
+					'.' + fn + '.md',
+					fn + '.markdown',
+					'.' + fn + '.markdown',
+				])
+
+				if (this.config.show_asciidoc === 'true') {
+					Array.prototype.push.apply(names, [
+						fn + '.adoc',
+						fn + '.asciidoc',
+						'.' + fn + '.adoc',
+						'.' + fn + '.asciidoc',
 					])
+				}
 
-					if (this.config.show_asciidoc === 'true') {
-						Array.prototype.push.apply(FFNames, [
-							fn + '.adoc',
-							fn + '.asciidoc',
-							'.' + fn + '.adoc',
-							'.' + fn + '.asciidoc',
-						])
-					}
-
-					if (this.config.show_html === 'true') {
-						Array.prototype.push.apply(FFNames, [
-							fn + '.htm',
-							fn + '.html',
-							'.' + fn + '.htm',
-							'.' + fn + '.html',
-						])
-					}
-				})
-				return FFNames
-			} else {
-				const HFNames = []
-				this.config.fileslist_header.forEach((fn) => {
-					Array.prototype.push.apply(HFNames, [
-						fn + '.md',
-						fn + '.markdown',
-						'.' + fn + '.md',
-						'.' + fn + '.markdown',
+				if (this.config.show_html === 'true') {
+					Array.prototype.push.apply(names, [
+						fn + '.htm',
+						fn + '.html',
+						'.' + fn + '.htm',
+						'.' + fn + '.html',
 					])
-
-					if (this.config.show_asciidoc === 'true') {
-						Array.prototype.push.apply(HFNames, [
-							fn + '.adoc',
-							fn + '.asciidoc',
-							'.' + fn + '.adoc',
-							'.' + fn + '.asciidoc',
-						])
-					}
-
-					if (this.config.show_html === 'true') {
-						Array.prototype.push.apply(HFNames, [
-							fn + '.htm',
-							fn + '.html',
-							'.' + fn + '.htm',
-							'.' + fn + '.html',
-						])
-					}
-				})
-				return HFNames
-			}
+				}
+			})
+			return names
 		},
 
 		mode() {
-			const IS_PUBLIC = !!(document.getElementById('isPublic'))
-
-			if (IS_PUBLIC) {
-				return 'public'
-			} else {
-				return 'private'
-			}
+			// On Nextcloud >= 30 the public share page is provided through the
+			// files app and exposes its state via the files_sharing app.
+			return loadState('files_sharing', 'isPublic', false) ? 'public' : 'private'
 		},
 
 	},
 
 	watch: {
 		async path() {
-			this.content = await this.fillContent()
-			if (this.zone == "footermd" && this.content !== null ) {
-				this.adjustCSS()
-			}
+			await this.refresh()
 		},
 	},
 
 	async mounted() {
-		this.content = await this.fillContent()
-		if (this.zone == "footermd" && this.content !== null ) {
-			this.adjustCSS()
-		}
+		await this.refresh()
 	},
 
 	methods: {
-		adjustCSS() {
+		async refresh() {
+			// Guard against out-of-order responses when the folder changes
+			// faster than the (slow) content fetch resolves.
+			const requestId = ++this.requestId
+			logger.debug('[' + this.zone + '] Refreshing for path ' + this.path)
 
-			let container
-
-			if (this.mode === 'private') {
-				container = '.files-list'
-			} else {
-				container = '#files-public-content > #preview'
+			if (!this.path) {
+				return
 			}
-			document.querySelector(container).style.setProperty('overflow', 'unset')
-			document.querySelector(container + ' > table > tbody').style.setProperty('min-height', 'unset')
-			document.querySelector(container + ' > table > tfoot').style.setProperty('min-height', 'unset')
-			document.querySelector(container + ' > table > tfoot').style.setProperty('height', '65px')
-			document.querySelector(container + ' > table > tfoot > tr').style.setProperty('height', '65px')
-		},
 
-		async fillContent() {
-			// find a file in current dir that match one from filelist above
-			this.fileName = null
-			this.fileName = await this.getElectedFileName()
-			logger.debug('[' + this.zone + '] File elected : ' + this.fileName + ' for path ' + this.path)
-			// if we've got a candidate then let's use it
-			if (this.fileName !== null && this.fileName !== undefined) {
-				logger.debug('[' + this.zone + '] File elected : ' + this.fileName + ' for path ' + this.path)
-				return await this.getFile()
-			} else {
-				logger.debug('[' + this.zone + '] No File elected : for path ' + this.path)
-				return null
+			try {
+				this.fileName = null
+				const elected = await this.getElectedFileName()
+
+				let content = null
+				if (elected !== null && elected !== undefined) {
+					logger.debug('[' + this.zone + '] File elected : ' + elected + ' for path ' + this.path)
+					content = await this.getFile(elected)
+				} else {
+					logger.debug('[' + this.zone + '] No File elected : for path ' + this.path)
+				}
+
+				if (requestId === this.requestId) {
+					this.fileName = elected
+					this.content = content
+				}
+			} catch (error) {
+				logger.error('[' + this.zone + '] Failed to load content for path ' + this.path, { error })
+				if (requestId === this.requestId) {
+					this.fileName = null
+					this.content = null
+				}
 			}
 		},
 
 		async getElectedFileName() {
-
-			let FL
-
-			if (this.mode === 'public') {
-				logger.debug('Mode public')
-				const contents = OCA.Sharing.PublicApp.fileList.files
-				FL = contents.map((file) => { if (file.type === 'file') { return file.name } else { return undefined } })
-			} else {
-				logger.debug('Mode private')
-				const { contents } = await this.fileTableView.getContents(this.path)
-				FL = contents.map((file) => { if (file.type === 'file') { return file.basename } else { return undefined } })
-			}
+			const { contents } = await this.fileTableView.getContents(this.path)
+			const FL = contents
+				.filter((file) => file.type === 'file')
+				.map((file) => file.basename)
 
 			let result
 
@@ -199,22 +167,22 @@ export default {
 			return result
 		},
 
-		async getFile() {
+		async getFile(fileName) {
 			let URL
 
 			if (this.mode === 'public') {
-				const token = document.getElementById('sharingToken').value
+				const token = loadState('files_sharing', 'sharingToken')
 
 				URL = generateUrl('/s/{token}/download?path={path}&files={file}',
 					{
 						token,
 						path: this.path,
-						file: this.fileName,
+						file: fileName,
 					},
 				)
 			} else {
 				const dir = this.path.replace('?', '%3F')
-				const fname = this.fileName.replace('?', '%3F')
+				const fname = fileName.replace('?', '%3F')
 				URL = OC.linkToRemoteBase('files' + dir + '/' + fname)
 			}
 
@@ -225,20 +193,3 @@ export default {
 }
 
 </script>
-
-<style scoped>
-.footermd {
-	padding: 1em ;
-	border-top: 1px solid silver ;
-	margin-top: 1em ;
-	text-align: initial ;
-}
-
-.headermd {
-	padding: 1em ;
-	border-bottom: 1px solid silver ;
-	text-align: initial ;
-	z-index: 59 ;
-}
-
-</style>

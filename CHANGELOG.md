@@ -1,3 +1,36 @@
+## 3.1.0 20-08-2026
+### Added
+  - Compat with NC 33 & 34
+  - GitHub-style visual design for README/HEADER rendering: card layout with a
+    centered content column, blue links adaptive to light/dark themes,
+    restyled tables, blockquotes, dividers and callouts
+  - Code blocks get a toolbar with language label and copy button
+  - Mermaid diagrams render lazily, GitHub-style: all diagram types, theme
+    follows the Nextcloud palette, copy-button for the diagram source,
+    graceful fallback to the source on parse errors
+  - Native markdown theming using Nextcloud CSS variables (dark & high-contrast themes)
+  - Only admins can change the app configuration
+### Changed
+  - Migrated to the `@nextcloud/files` v4 file list header API
+  - Unified private & public shares handling (single frontend bundle)
+  - Footer is rendered inside the file list scroll container (gitlab style),
+    project header relocated above the breadcrumbs in whole-page scroll mode
+### Fixed
+  - Header/footer files were never matched when the admin configured basenames
+    already containing an extension (e.g. `README.md` instead of `README`)
+  - Code block theming now detects the theme from the applied CSS variables
+    (fixes dark-on-dark code text in dark themes)
+  - Long README feeds freeze/jank when scrolling: clamp the virtual file list
+    index at the total row count so the list spacer cannot grow past the last
+    row, keeping a single smooth GitHub-like scroll with the README
+  - Concurrent header/footer refreshes no longer race: out-of-order responses
+    cannot overwrite a newer folder's content or filename
+### Removed
+  - Compat with NC <= 32 (pre-`@nextcloud/files` v4)
+  - `github-markdown-css` dependency
+  - The batch "Delete" button in the files selection bar (caused UI freezes);
+    Nextcloud's native delete flow is used again
+
 ## 3.0.2 27-09-2024
 ### Added
   - Provide date-file dataset

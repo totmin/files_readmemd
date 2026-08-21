@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				},
 			},
 		)
-			.success(function(json) {
+			.then(function(json) {
 			// console.log(json) ;
 			})
 	}
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				},
 			},
 		)
-			.success(function(json) {
+			.then(function(json) {
 			// console.log(json) ;
 			})
 	}

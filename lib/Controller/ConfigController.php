@@ -51,12 +51,18 @@ class ConfigController extends Controller {
         return $params ;
     }
 
+    /**
+     * @AdminRequired
+    */
     public function setConfig($key,$value) {
         $this->config->setAppValue($key,$value)  ;
 
         return  $this->config->getAppValue($key) ;
     }
 
+    /**
+     * @AdminRequired
+    */
     public function removeFileName($file,$zone) {
         
         if ($zone === "header") {
@@ -80,6 +86,9 @@ class ConfigController extends Controller {
         
     }
 
+    /**
+     * @AdminRequired
+    */
     public function addFileName ($file,$zone) {
 
         if ($zone === "header") {
