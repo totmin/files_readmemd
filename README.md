@@ -13,14 +13,15 @@ are rendered where GitLab shows them: the `HEADER.md` above the file list and th
 
 This is a maintained fork of [mamatt/files_readmemd](https://github.com/mamatt/files_readmemd)
 by Matthieu Le Corre. Since **3.1.0** it targets **Nextcloud 33 & 34** (using the
-`@nextcloud/files` v4 file list header API), renders markdown GitHub-style (code block
-toolbar, lazy mermaid diagrams, theme-adaptive styling) and is maintained by
+`@nextcloud/files` v4 file list header API), and since **3.3.0** it also supports
+**Nextcloud 35**. It renders markdown GitHub-style (code block toolbar, lazy mermaid
+diagrams, theme-adaptive styling) and is maintained by
 [Maksim Totmin](https://github.com/totmin). Versions up to 3.0.2 were released by the
 upstream project.
 
 ## Features
 
-- Compatible with **Nextcloud 33 & 34**
+- Compatible with **Nextcloud 33, 34 & 35**
 - GitHub-style rendering: card layout, centered content column, light/dark/high-contrast
   theme support
 - GitHub blue links that follow the active Nextcloud theme
@@ -35,12 +36,12 @@ upstream project.
 
 | Component            | Version                          |
 |----------------------|----------------------------------|
-| Nextcloud            | 33 or 34                         |
+| Nextcloud            | 33, 34 or 35                     |
 | Node.js (to build)   | >= 20.5.1                        |
 | npm (to build)       | >= 10.8.1                        |
 
 The build step only matters if you install from source (see below). The app itself runs
-on any Nextcloud 33/34 instance.
+on any Nextcloud 33/34/35 instance.
 
 ## Installation (from source)
 

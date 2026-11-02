@@ -1,3 +1,16 @@
+## 3.3.0 02-11-2026
+### Added
+  - Compat with Nextcloud 35
+### Fixed
+  - The app is no longer disabled by the Nextcloud 35 upgrade: `appinfo/info.xml`
+    now declares `max-version="35"` instead of `34`
+### Notes
+  - No frontend changes were required: the bundled `@nextcloud/files` 4.0.0
+    header API is compatible with the 4.1.x library shipped with Nextcloud 35,
+    and all file-list DOM hooks still exist
+  - The 3.2.x line existed only as deployment snapshots and was never tagged in
+    git; 3.3.0 is the first tagged release after 3.1.0 and includes those fixes
+
 ## 3.1.0 20-08-2026
 ### Added
   - Compat with NC 33 & 34
