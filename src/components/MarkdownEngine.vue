@@ -338,7 +338,12 @@ export default {
 
 	watch: {
 		async content() {
-			this.renderedContent = await this.renderMD()
+			try {
+				this.renderedContent = await this.renderMD()
+			} catch (error) {
+				logger.error('Failed to render markdown', { error })
+				this.renderedContent = ''
+			}
 		},
 
 	},
@@ -401,6 +406,18 @@ export default {
 
 		logger.debug('Markdown engine loaded')
 
+	},
+
+	mounted() {
+		// The component can be created after the parent already has the content
+		// (e.g. the file name and the content are assigned in the same tick).
+		// In that case the `content` watcher does not fire, so render the
+		// initial payload explicitly.
+		this.renderMD()
+			.then((html) => { this.renderedContent = html })
+			.catch((error) => {
+				logger.error('Failed to render markdown', { error })
+			})
 	},
 
 	updated() {

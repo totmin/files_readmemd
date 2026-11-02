@@ -1,3 +1,11 @@
+## 3.3.1 02-11-2026
+### Fixed
+  - README/HEADER content could stay empty when the file name and the content
+    were assigned in the same tick: the markdown engine was created with the
+    content already set, so its `content` watcher never fired. It now renders
+    the initial payload on mount and logs render errors instead of leaving an
+    empty card
+
 ## 3.3.0 02-11-2026
 ### Added
   - Compat with Nextcloud 35
